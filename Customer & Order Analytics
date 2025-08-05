@@ -1,0 +1,3 @@
+-- In this SQL project, I'm querying a database with multiple tables in it to quantify statistics about customer and order data.--
+
+-- Q.1: How many unique orders were placed in January?
