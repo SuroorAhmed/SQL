@@ -1,3 +1,61 @@
 -- In this SQL project, I'm querying a database with multiple tables in it to quantify statistics about customer and order data.--
 
--- Q.1: How many unique orders were placed in January?
+-- Q1: How many unique orders were placed in January?--
+SELECT COUNT(DISTINCT orderid)
+FROM BIT_DB.JanSales
+WHERE length(orderid) = 6
+AND orderid <> 'Order ID';
+
+--Answer: 9268--
+
+--Q2: How many of those orders were for an iPhone?--
+SELECT COUNT(distinct orderid),product
+FROM BIT_DB.JanSales
+WHERE Product='iPhone'
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+AND LOWER(product) = 'iphone'
+AND LOWER(product) LIKE '%iphone%';
+
+--Answer: 379--
+
+--Q3: Select the customer account numbers for all the orders that were placed in February--
+SELECT distinct acctnum
+FROM BIT_DB.customers AS cust
+INNER JOIN BIT_DB.FebSales AS Feb
+ON cust.order_id = Feb.orderID
+WHERE length(orderid) = 6
+AND orderid<> 'Order ID';
+
+--Q4: Which product was the cheapest one sold in January, and what was the price?--
+SELECT distinct Product, price
+FROM BIT_DB.JanSales
+WHERE price in (SELECT min(price) FROM BIT_DB.JanSales);
+
+--or for a list--
+SELECT product,price
+FROM BIT_DB.JanSales
+GROUP BY product
+Order BY price ASC
+LIMIT 5;
+
+--Q5: What is the total revenue for each product sold in January?--
+SELECT product, SUM(price * quantity) AS Total_Revenue
+FROM BIT_DB.JanSales
+GROUP BY product
+ORDER BY Total_Revenue DESC;
+
+
+--q6: Which products were sold in February at 548 Lincoln St, Seatttle, WA 98101. How many of each where sold and what was the total revenue?--
+SELECT product, quantity, location, SUM(quantity)*price AS revenue
+FROM BIT_DB.FebSales
+WHERE location LIKE '548 Lincoln St, Seattle%';
+
+--Q7: How many customers ordered more than 2 products at a time in February, and what was the avaerage amount spent for those customers?--
+SELECT Count(distinct cust.acctnum), avg(quantity*price)
+FROM BIT_DB.FebSales AS Feb
+LEFT JOIN BIT_DB.customers AS cust
+ON Feb.orderid = cust.order_id
+WHERE Feb.quantity>2
+AND length(orderid)=6
+AND orderid <> 'Order ID';
