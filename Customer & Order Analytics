@@ -45,7 +45,7 @@ FROM BIT_DB.JanSales
 GROUP BY product
 ORDER BY Total_Revenue DESC;
 
---q6: Which products were sold in February at 548 Lincoln St, Seatttle, WA 98101. How many of each where sold and what was the total revenue?--
+--Q6: Which products were sold in February at 548 Lincoln St, Seatttle, WA 98101. How many of each where sold and what was the total revenue?--
 SELECT product, quantity, location, SUM(quantity)*price AS revenue
 FROM BIT_DB.FebSales
 WHERE location LIKE '548 Lincoln St, Seattle%';
@@ -65,3 +65,33 @@ FROM BIT_DB.FebSales
 WHERE location LIKE '%Los Angeles%'
 GROUP BY product
 ORDER BY SUM(quantity) ASC;
+
+--Q9 Which locations in New York received at least 3 orders in January, and how many orders did they each receieve?-- 
+SELECT product, COUNT(DISTINCT orderid)AS order_count, location
+FROM BIT_DB.JanSales
+WHERE location LIKE '%New York%'
+GROUP BY location
+HAVING COUNT(DISTINCT orderid) >=3
+ORDER BY order_count DESC;
+
+--Q10 How many of each type of headphone were sold in February?--
+SELECT DISTINCT product, SUM(quantity) 
+FROM BIT_DB.FebSales
+WHERE product LIKE '%Headphones%'
+GROUP BY product;
+
+--Q11 What was the average amount spent per account in February? 
+SELECT SUM(price * quantity) * 1.0 / COUNT(DISTINCT orderid) AS avg_spent_per_account
+FROM BIT_DB.FebSales;
+
+--Q12 What was the average quantity of products purchased per account in February?--
+SELECT SUM(quantity) *1.0 / COUNT(DISTINCT orderid) AS avg_order_per_account
+FROM BIT_DB.FebSales;
+
+--Q12 Which product brought in the most revenue in January and how much revenue did it bring in total?--
+SELECT product, SUM(price * quantity) AS Total_Revenue
+FROM BIT_DB.JanSales
+GROUP BY product
+ORDER BY Total_Revenue DESC
+LIMIT 1;
+
