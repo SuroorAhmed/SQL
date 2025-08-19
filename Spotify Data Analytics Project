@@ -26,6 +26,7 @@ FROM BIT_DB.Spotifydata;
 
 --Q1: Does danceability vary across tempo ranges (e.g., slow vs fast songs)?--
 --I looked at the data I was interested in--
+
 SELECT artist_name, track_name, danceability, tempo
 FROM BIT_DB.Spotifydata
 ORDER BY tempo DESC;
@@ -61,13 +62,36 @@ avg_danceability	avg_energy	      avg_valence	      avg_loudness	    avg_speechi
 --These rusults show that the most popular songs aren’t necessarily the happiest, but they are fast, energetic, polished, and just the right length to keep listeners engaged.--
 
 --Q3:Which song is the longest, who is the artist?--
+
 SELECT artist_name, track_name, danceability, duration_ms
 FROM BIT_DB.Spotifydata
 ORDER BY duration_ms DESC
 LIMIT 1;
 
 --Q4: What’s the average popularity of all songs in the dataset?--
+
 SELECT AVG(popularity) AS avg_popularity
 FROM BIT_DB.Spotifydata;
 
+--Q5: Calculate the average popularity for the artists in the Spotify data table. Then, for every artist with an average popularity of 90 or above, show their name, their average popularity, and label them as a “Top Star”.--
 
+SELECT artist_name, AVG(popularity) AS avg_popularity, 'Top Star' AS label
+FROM BIT_DB.Spotifydata
+GROUP BY artist_name
+HAVING AVG(popularity) >=90
+Limit 5;
+
+--Answer the same question using a CTE--
+
+WITH popularity_average_CTE AS (
+SELECT s.artist_name,
+AVG(s.popularity) AS average_popularity
+FROM SpotifyData s 
+GROUP BY s.artist_name
+)
+ 
+SELECT  artist_name,
+        average_popularity,
+        'Top Star' AS tag
+FROM popularity_average_CTE
+WHERE average_popularity>=90;
