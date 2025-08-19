@@ -1,0 +1,73 @@
+Spotify Audio Features Dataset
+
+CREATE TABLE BIT_DB.Spotifydata (
+id integer PRIMARY KEY,
+artist_name varchar NOT NULL,
+track_name varchar NOT NULL,
+track_id varchar NOT NULL,
+popularity integer NOT NULL,
+danceability decimal(4,3) NOT NULL,
+energy decimal(4,3) NOT NULL,
+song_key integer NOT NULL,
+loudness decimal(5,3) NOT NULL,
+song_mode integer NOT NULL,
+speechiness decimal(5,4) NOT NULL,
+acousticness decimal(6,5) NOT NULL,
+instrumentalness decimal(8,7) NOT NULL,
+liveness decimal(5,4) NOT NULL,
+valence decimal(4,3) NOT NULL,
+tempo decimal(6,3) NOT NULL,
+duration_ms integer NOT NULL,
+time_signature integer NOT NULL )
+
+--First, I looked at all the data in the table--
+SELECT * 
+FROM BIT_DB.Spotifydata;
+
+--Q1: Does danceability vary across tempo ranges (e.g., slow vs fast songs)?--
+--I looked at the data I was interested in--
+SELECT artist_name, track_name, danceability, tempo
+FROM BIT_DB.Spotifydata
+ORDER BY tempo DESC;
+
+--Then, I summarized and grouped the data to look at the correlation between Tempo and Danceability. I grouped songs into ranges (slow/medium/fast), then calculated the average danceability for each group.--
+SELECT 
+      CASE 
+          WHEN tempo <100 THEN 'Slow'
+          WHEN tempo BETWEEN 100 AND 150 THEN 'Medium'
+          ELSE 'Fast'
+      END AS tempo_range,
+      AVG(danceability) AS avg_danceability,
+      COUNT(*) AS song_count
+FROM BIT_DB.Spotifydata     
+GROUP BY tempo_range
+ORDER BY avg_danceability DESC; 
+
+--Q2: Which features (danceability, energy, valence, etc.) are most common in popular songs (popularity > 80)?--
+SELECT 
+    AVG(danceability) AS avg_danceability,
+    AVG(energy) AS avg_energy,
+    AVG(valence) AS avg_valence,
+    AVG(loudness) AS avg_loudness,
+    AVG(speechiness) AS avg_speechiness,
+    AVG(tempo) AS avg_tempo,
+    AVG(duration_ms) AS avg_duration
+FROM BIT_DB.Spotifydata
+WHERE popularity > 80;
+--Output--
+avg_danceability	avg_energy	      avg_valence	      avg_loudness	    avg_speechiness	  avg_tempo	          avg_duration
+0.67245238095238	0.64502380952381	0.52024285714286	-5.93316666666667	0.08168571428571	122.14578571428571	200189.92857142858
+
+--These rusults show that the most popular songs aren’t necessarily the happiest, but they are fast, energetic, polished, and just the right length to keep listeners engaged.--
+
+--Q3:Which song is the longest, who is the artist?--
+SELECT artist_name, track_name, danceability, duration_ms
+FROM BIT_DB.Spotifydata
+ORDER BY duration_ms DESC
+LIMIT 1;
+
+--Q4: What’s the average popularity of all songs in the dataset?--
+SELECT AVG(popularity) AS avg_popularity
+FROM BIT_DB.Spotifydata;
+
+
