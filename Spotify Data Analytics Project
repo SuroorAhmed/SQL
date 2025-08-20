@@ -1,5 +1,5 @@
-
-#Spotify Audio Features Dataset
+--Spotify Audio Features Dataset--
+--First I created a table--
 
 CREATE TABLE BIT_DB.Spotifydata (
 id integer PRIMARY KEY,
