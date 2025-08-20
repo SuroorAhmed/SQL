@@ -21,7 +21,7 @@ tempo decimal(6,3) NOT NULL,
 duration_ms integer NOT NULL,
 time_signature integer NOT NULL )
 
---First, I looked at all the data in the table--
+--Then, I looked at all the data in the table--
 SELECT * 
 FROM BIT_DB.Spotifydata;
 
