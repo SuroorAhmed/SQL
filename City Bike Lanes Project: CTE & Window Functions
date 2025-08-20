@@ -18,3 +18,13 @@ ORDER BY average_safetyrating DESC;
 -- ===================================== --
 -- Section: Window Functions --
 -- ===================================== --
+--Q1:List of all the bike lanes, both safety ratings for each lane given by the two technicians, the average safety rating for each lane, and a label with the recommendation as "Remove", "Leave As-Is", or "Improvements Needed".
+SELECT street, safetyrating,
+AVG(safetyrating) OVER (PARTITION BY street) AS 'Average_Safety_Rating',
+CASE
+    WHEN AVG(safetyrating) OVER(PARTITION BY street) >=4 THEN 'Leave-As-Is'
+    WHEN AVG(safetyrating) OVER(PARTITION BY street) <=2 THEN 'Remove'
+    ELSE 'Improvements Needed'
+    END AS 'Recommendation'
+FROM CityBikeLanes
+ORDER BY Average_Safety_Rating ASC;  
