@@ -1,0 +1,20 @@
+-- ===================================== --
+-- Section: CTE = Commom Table Expressions --
+-- ===================================== --
+
+-- Looking at date table that shows the safety rating of city bike lanes --
+
+--Q1: List all of the bike lanes that have aa average safety rating of 4.0 or higher. Also show the average safety rating for each of those bike lanes and label them "Safe Lane"--
+WITH safetyrating_average_CTE AS (
+SELECT street, AVG(safetyrating) AS average_safetyrating
+FROM CityBikeLanes
+GROUP BY street
+)
+SELECT street,average_safetyrating, 'Safe Lane' AS 'label'
+FROM safetyrating_average_CTE
+WHERE average_safetyrating >=4.0
+ORDER BY average_safetyrating DESC;
+
+-- ===================================== --
+-- Section: Window Functions --
+-- ===================================== --
