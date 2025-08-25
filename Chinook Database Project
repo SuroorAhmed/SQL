@@ -31,7 +31,12 @@ FROM invoices
 GROUP By BillingCountry
 ORDER BY Country_Sales DESC;
 
---Q3:Count the number of tracks per genre. --
+--Q3:Show Customers (their full names, customer ID, and country) who are not in the US.--
+SELECT CustomerId, FirstName, LastName, Country
+FROM customers
+WHERE Country <> 'USA';
+
+--Q4:Count the number of tracks per genre. --
 SELECT g.Name AS Genre, COUNT(t.TrackId) AS TrackCount
 FROM genres AS g
 LEFT JOIN tracks AS t
@@ -39,7 +44,7 @@ LEFT JOIN tracks AS t
 GROUP BY Name
 ORDER BY TrackCount DESC;
 
---Q4:List the top 3 selling artists by total sales.--
+--Q5:List the top 3 selling artists by total sales.--
 SELECT ar.Name AS Artist, SUM(it.UnitPrice * it.Quantity) AS TotalSales
 FROM invoice_items AS it
 JOIN Tracks AS t ON it.TrackId = t.TrackId
@@ -49,7 +54,7 @@ GROUP BY ar.Name
 ORDER BY TotalSales DESC
 LIMIT 3;
 
---Q5:Find the top 5 purchased tracks, include the artist's name.--
+--Q6:Find the top 5 purchased tracks, include the artist's name.--
 SELECT t.Name AS Track, ar.Name AS Artist, COUNT(it.InvoiceLineId) AS TimesPurchased
 FROM invoice_items AS it
 JOIN tracks AS t ON it.TrackId = t.TrackId
@@ -59,7 +64,7 @@ GROUP BY t.TrackId, t.Name, ar.Name
 ORDER BY TimesPurchased DESC
 LIMIT 5;
 
---Q6:Rank customers by total spend.--
+--Q7:Rank customers by total spend.--
 SELECT c.FirstName || ' ' || c.LastName AS Customer,
        SUM(i.Total) AS TotalSpent,
        ROW_NUMBER() OVER (ORDER BY SUM(i.Total) DESC) AS RowNum
