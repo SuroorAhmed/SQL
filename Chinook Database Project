@@ -1,0 +1,68 @@
+--=========================================================================================================================================--
+
+--Chinook Database Project--
+--The Chinook dataset is a sample database. It’s a small digital music store schema. For this project I will start with basic queries leading to advanced analysis using joins, aggregates, window functions, subqueries, etc.--
+
+--What’s in the Chinook database?--
+
+ It has the foloowing tables:
+ Customers → info about customers (name, company, country, etc.)
+ Employees → staff members (support reps, etc.)
+ Invioces → customer billing information
+ Invoice_items → purchases and the tracks/albums sold
+ Artists → musicians/bands
+ Albums → albums by artists
+ Tracks → individual songs
+ Genre → music genres
+ Media_type → file format (MP3, AAC, etc.)
+ Playlist → playlists and their tracks
+ Playlist_track → playlist id and track id 
+
+--=========================================================================================================================================--
+
+--Q1: List all albums in order of the artist's id.--
+SELECT Albumid, Title, Artistid
+FROM albums
+Order By Artistid ASC;
+
+--Q2:Find the total sales per country.--
+SELECT BillingCountry, SUM(Total) AS Country_Sales
+FROM invoices
+GROUP By BillingCountry
+ORDER BY Country_Sales DESC;
+
+--Q3:Count the number of tracks per genre. --
+SELECT g.Name AS Genre, COUNT(t.TrackId) AS TrackCount
+FROM genres AS g
+LEFT JOIN tracks AS t
+     ON g.GenreId = t.GenreID
+GROUP BY Name
+ORDER BY TrackCount DESC;
+
+--Q4:List the top 3 selling artists by total sales.--
+SELECT ar.Name AS Artist, SUM(it.UnitPrice * it.Quantity) AS TotalSales
+FROM invoice_items AS it
+JOIN Tracks AS t ON it.TrackId = t.TrackId
+JOIN Albums AS al ON t.AlbumId = al.AlbumId
+JOIN Artists AS ar ON al.ArtistId = ar.ArtistId
+GROUP BY ar.Name
+ORDER BY TotalSales DESC
+LIMIT 3;
+
+--Q5:Find the top 5 purchased tracks, include the artist's name.--
+SELECT t.Name AS Track, ar.Name AS Artist, COUNT(it.InvoiceLineId) AS TimesPurchased
+FROM invoice_items AS it
+JOIN tracks AS t ON it.TrackId = t.TrackId
+JOIN albums AS al ON t.AlbumId = al.AlbumId
+JOIN artists AS ar ON al.AlbumId = ar.ArtistId
+GROUP BY t.TrackId, t.Name, ar.Name
+ORDER BY TimesPurchased DESC
+LIMIT 5;
+
+--Q6:Rank customers by total spend.--
+SELECT c.FirstName || ' ' || c.LastName AS Customer,
+       SUM(i.Total) AS TotalSpent,
+       ROW_NUMBER() OVER (ORDER BY SUM(i.Total) DESC) AS RowNum
+FROM Customers c
+JOIN Invoices AS i ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId;
